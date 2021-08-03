@@ -1,4 +1,4 @@
-package com.yadlings.restfull.v3.Controllers.Controllers;
+package com.yadlings.restfull.v3.Controllers;
 
 import com.yadlings.restfull.Domain.Poll;
 import com.yadlings.restfull.Exception.RestException;
