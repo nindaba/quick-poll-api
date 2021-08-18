@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 @ControllerAdvice
-public class RestExceptionHandler{ //extends ResponseEntityExceptionHandler{
+public class RestExceptionHandler extends ResponseEntityExceptionHandler{
     @Autowired
     private MessageSource messageSource;
     @ExceptionHandler(ResourceException.NotFound.class)
@@ -62,8 +62,8 @@ public class RestExceptionHandler{ //extends ResponseEntityExceptionHandler{
                 .build();
         return new ResponseEntity<>(questionAlreadyExist, HttpStatus.CONFLICT);
     }
-//    @Override
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @Override
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException argumentNotValidException, HttpHeaders headers, HttpStatus status, WebRequest request
             )
@@ -92,7 +92,7 @@ public class RestExceptionHandler{ //extends ResponseEntityExceptionHandler{
         return new ResponseEntity<>(questionAlreadyExist, HttpStatus.BAD_REQUEST);
 
     }
-//    @Override
+    @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         RestException failedToConvert = new RestException
                 .Builder()

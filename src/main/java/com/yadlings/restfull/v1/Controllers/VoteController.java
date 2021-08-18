@@ -16,7 +16,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 
 @RestController(value = "V1 Votes")
-@RequestMapping("/v1/poll/{pollId}/votes")
+@RequestMapping("/v1/poll/{pollId}/vote")
 @Api(value = "Votes",description = "Votes Api")
 public class VoteController {
     @Autowired

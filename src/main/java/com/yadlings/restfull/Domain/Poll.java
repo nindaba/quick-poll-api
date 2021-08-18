@@ -30,4 +30,5 @@ public class Poll {
     @NotNull
     @ApiModelProperty(required = true,notes = "The Options must be more than 2 and less tha 6")
     private Set<Option> options;
+    private long timestamp;
 }

@@ -19,6 +19,7 @@ import java.util.List;
 @RestController("V1 Poll")
 @RequestMapping("/v1/poll")
 @Api(value = "Poll",description = "Poll API")
+@CrossOrigin
 public class PollController {
     @Autowired
     private PollService pollService;

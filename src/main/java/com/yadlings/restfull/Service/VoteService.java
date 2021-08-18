@@ -21,15 +21,16 @@ public class VoteService {
     private VoteRepository voteRepository;
     @Autowired
     private PollRepository pollRepository;
+    @Autowired
+    private VoteCount voteCount;
     public ResponseEntity<?> getVotes(String pollId) {
-        List<Vote> all = voteRepository.findByPollId(pollId);
-        if(all.size() < 0) throw new ResourceException.NotFound("No Poll Exist by Id "+pollId);
-        return new ResponseEntity<>(all, HttpStatus.OK);
+        return voteCount.getResults(pollId);
     }
 
     public ResponseEntity<?> saveVote(String pollId,Vote vote) {
         pollRepository.findById(pollId)
                         .map(poll -> {
+                            if(!poll.getOptions().contains(vote.getOption())) throw new ResourceException.NotFound("Option "+vote.getOption()+" does not exist");
                             vote.setPollId(pollId);
                             return poll;}
                         ).orElseThrow(()-> new ResourceException.NotFound("No Poll Exist by Id "+pollId));
@@ -41,6 +42,7 @@ public class VoteService {
                 .buildAndExpand("pollId",save.getPollId(),"id",save.getId())
                 .toUri()
         );
+        voteCount.count(save);
         return new ResponseEntity<>(httpHeaders, HttpStatus.OK);
     }
 

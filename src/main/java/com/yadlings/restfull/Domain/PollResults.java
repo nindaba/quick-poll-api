@@ -4,20 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.NotNull;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Document
-public class Vote {
+public class PollResults {
     @Id
     private String id;
-    private String pollId;
-    @NotNull
-    private Option option;
-    private long timestamp;
+    private Map<String,Integer> optionVotes = new HashMap<>();
+    private long lastVote;
 }

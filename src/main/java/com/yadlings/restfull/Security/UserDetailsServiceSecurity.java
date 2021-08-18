@@ -34,6 +34,7 @@ public class UserDetailsServiceSecurity implements UserDetailsService {
         return user.getAdmin() ? AuthorityUtils.createAuthorityList("ROLE_ADMIN") : new ArrayList<GrantedAuthority>();
     }
     private UserDetails userDetails(List auth,User user){
+        log.info("USER FOUND {}",user);
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), auth);
     }
 }

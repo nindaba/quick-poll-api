@@ -12,12 +12,9 @@ public class ResourceServerConf extends ResourceServerConfigurerAdapter {
     public void configure(ResourceServerSecurityConfigurer configurer){
         configurer.resourceId("Quick_res");
     }
-
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.requestMatchers()
-                .antMatchers("/oauth2/v3/poll/**")
-                .and()
+        http
                 .authorizeRequests()
                 .antMatchers("/oauth2/v3/poll/**")
                 .authenticated();

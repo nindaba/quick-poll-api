@@ -33,7 +33,7 @@ public class PollService {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(ServletUriComponentsBuilder
                 .fromCurrentServletMapping()
-                .path("poll/{id}")
+                .path("v1/poll/{id}")
                 .buildAndExpand(save.getId())
                 .toUri()
         );
