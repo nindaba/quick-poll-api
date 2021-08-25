@@ -10,6 +10,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -17,6 +18,7 @@ import javax.validation.Valid;
 
 @RestController(value = "V1 Votes")
 @RequestMapping("/v1/poll/{pollId}/vote")
+@CrossOrigin
 @Api(value = "Votes",description = "Votes Api")
 public class VoteController {
     @Autowired
@@ -26,8 +28,8 @@ public class VoteController {
         return voteService.getVotes(pollId);
     }
     @PostMapping
-    public ResponseEntity<?> saveVote(@PathVariable("pollId") String pollId,@Valid @RequestBody Vote vote){
-        return voteService.saveVote(pollId,vote);
+    public ResponseEntity<?> saveVote(@PathVariable("pollId") String pollId,@Valid @RequestBody Vote vote,@RequestParam String userid){
+        return voteService.saveVote(pollId,vote,userid);
     }
     @GetMapping("/{id}")
     public ResponseEntity<?> getVote(@PathVariable("id") String id){
@@ -37,9 +39,13 @@ public class VoteController {
     public ResponseEntity<?> deleteVote(@PathVariable("id") String id){
         return voteService.deleteVote(id);
     }
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updatePoll(@PathVariable("id") String id,@Valid @RequestBody Vote vote){
+    @PutMapping
+    public ResponseEntity<?> updatePoll(@RequestParam(defaultValue = "",required = false,name="userId") String id,@Valid @RequestBody Vote vote){
         return voteService.updatePoll(id,vote);
+    }
+    @GetMapping("/results")
+    public ResponseEntity<?> getVotedResults(@RequestParam(defaultValue = "",required = false,name="userId") String userId){
+        return voteService.votedResults(userId);
     }
 
 }

@@ -20,8 +20,8 @@ public class VoteController {
         return voteService.getVotes(pollId);
     }
     @PostMapping
-    public ResponseEntity<?> saveVote(@PathVariable("pollId") String pollId,@Valid @RequestBody Vote vote){
-        return voteService.saveVote(pollId,vote);
+    public ResponseEntity<?> saveVote(@PathVariable("pollId") String pollId,@Valid @RequestBody Vote vote,@RequestParam String userid){
+        return voteService.saveVote(pollId,vote,userid);
     }
     @GetMapping("/{id}")
     public ResponseEntity<?> getVote(@PathVariable("id") String id){

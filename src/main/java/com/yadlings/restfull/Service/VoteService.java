@@ -1,9 +1,11 @@
 package com.yadlings.restfull.Service;
 
 import com.yadlings.restfull.Domain.Poll;
+import com.yadlings.restfull.Domain.UserVoted;
 import com.yadlings.restfull.Domain.Vote;
 import com.yadlings.restfull.Exception.ResourceException;
 import com.yadlings.restfull.Repository.PollRepository;
+import com.yadlings.restfull.Repository.UserVotedRepository;
 import com.yadlings.restfull.Repository.VoteRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -23,11 +27,22 @@ public class VoteService {
     private PollRepository pollRepository;
     @Autowired
     private VoteCount voteCount;
+    @Autowired
+    private UserVotedRepository userVotedRepository;
     public ResponseEntity<?> getVotes(String pollId) {
         return voteCount.getResults(pollId);
     }
 
-    public ResponseEntity<?> saveVote(String pollId,Vote vote) {
+    public ResponseEntity<?> saveVote(String pollId,Vote vote,String userId) {
+//        if(userVotedRepository.findById(userId).isPresent()) throw new ResourceException.AlreadyExist("You have already voted");
+        userVotedRepository
+                .findById(userId)
+                .map(userVoted -> {
+                    if(userVoted.getPolls().contains(pollId)) throw new ResourceException.AlreadyExist("You have already voted");
+                    userVoted.getPolls().add(pollId);
+                    return userVotedRepository.save(userVoted);
+                })
+                .orElseGet(()->userVotedRepository.save(new UserVoted(userId, Arrays.asList(pollId))));
         pollRepository.findById(pollId)
                         .map(poll -> {
                             if(!poll.getOptions().contains(vote.getOption())) throw new ResourceException.NotFound("Option "+vote.getOption()+" does not exist");
@@ -66,5 +81,19 @@ public class VoteService {
                     return new ResponseEntity<>(HttpStatus.OK);
                 })
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    public ResponseEntity<?> results() {
+        throw new ResourceException.NotFound("Not yet Configured");
+    }
+
+    public ResponseEntity<?> votedResults(String userId) {
+        List voted = userVotedRepository
+                .findById(userId)
+                .map(userVoted -> userVoted.getPolls())
+                .orElse(new ArrayList<>());
+        List<Vote> all = voteRepository.findAll();
+        if(all.size()==0) throw new ResourceException.NotFound("Not Voted Yet");
+        return new ResponseEntity<>(all, HttpStatus.OK);
     }
 }

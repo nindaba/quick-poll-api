@@ -8,8 +8,11 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.log4j.Log4j2;
+import org.bouncycastle.crypto.tls.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +20,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController("V1 Poll")
-@RequestMapping("/v1/poll")
+@RequestMapping(value = "/v1/poll")
 @Api(value = "Poll",description = "Poll API")
 @CrossOrigin
 public class PollController {
@@ -25,8 +28,9 @@ public class PollController {
     private PollService pollService;
     @GetMapping
     @ApiOperation(value = "Retrieve all polls",response = List.class)
-    public ResponseEntity<List<Poll>> getPoll(){
-        return pollService.getPoll();
+    public ResponseEntity<List<Poll>> getPolls(@RequestParam(name = "userId",required = false,defaultValue = "") String userId){
+        System.out.println(userId);
+        return pollService.getPolls(userId);
     }
     @PostMapping
     @ApiOperation(value = "Create a new Poll",response = Void.class,notes = "The newly Created Poll's Id will be sent in response Headers in the Location")

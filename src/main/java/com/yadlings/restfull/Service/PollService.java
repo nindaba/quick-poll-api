@@ -3,26 +3,44 @@ package com.yadlings.restfull.Service;
 import com.yadlings.restfull.Domain.Poll;
 import com.yadlings.restfull.Exception.ResourceException;
 import com.yadlings.restfull.Repository.PollRepository;
+import com.yadlings.restfull.Repository.UserVotedRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PollService {
     @Autowired
     PollRepository pollRepository;
+    @Autowired
+    UserVotedRepository userVotedRepository;
 
-    public ResponseEntity<List<Poll>> getPoll() {
-        List<Poll> all = pollRepository.findAll();
+    public ResponseEntity<List<Poll>> getPolls(String userId) {
+        List voted = userVotedRepository
+                .findById(userId)
+                .map(userVoted -> userVoted.getPolls())
+                .orElse(new ArrayList<>());
+
+        List<Poll> all = pollRepository
+                .findAll()
+                .stream()
+                .dropWhile(poll -> voted.contains(poll.getId()))
+                .collect(Collectors.toList());
         if (all.size() == 0) throw new ResourceException.NotFound("No Poll Available In Database");
         return new ResponseEntity<>(all, HttpStatus.OK);
+
+
     }
 
     public ResponseEntity<?> savePoll(Poll poll) {

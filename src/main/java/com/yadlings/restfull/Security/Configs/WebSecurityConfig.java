@@ -1,5 +1,6 @@
 package com.yadlings.restfull.Security.Configs;
 
+import com.yadlings.restfull.Security.Filters.PerRequestFilter;
 import com.yadlings.restfull.Security.UserDetailsServiceSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 @Configuration
@@ -29,7 +33,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
     @Override
     protected void configure(HttpSecurity security) throws Exception{
-        security.sessionManagement()
+        security.csrf()
+                .disable().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
@@ -38,11 +43,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/v3/**")
                 .authenticated()
                 .and()
-                .httpBasic()
-                .realmName("Quick Poll")
-                .and()
-                .csrf()
-                .disable();
+                .addFilterBefore(new PerRequestFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean

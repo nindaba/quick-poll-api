@@ -23,8 +23,8 @@ public class PollController {
     private PollService pollService;
     @GetMapping
     @ApiOperation(value = "Retrieve all polls",response = List.class)
-    public ResponseEntity<List<Poll>> getPoll(){
-        return pollService.getPoll();
+    public ResponseEntity<List<Poll>> getPolls(@RequestParam(name = "userId",value = "") String userId){
+        return pollService.getPolls(userId);
     }
     @PostMapping
     @ApiOperation(value = "Create a new Poll",response = Void.class,notes = "The newly Created Poll's Id will be sent in response Headers in the Location")
